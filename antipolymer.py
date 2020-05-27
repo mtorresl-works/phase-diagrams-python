@@ -3,10 +3,12 @@ import numpy as np
 import cmath, math
 from scipy.special import dawsn
 from scipy.optimize import fsolve
+import os
 
 import antip_utils
 
 res = []
+os.makedirs("target/data", exist_ok=True)
 
 """ overall concentration and disc mole fraction """
 

@@ -5,6 +5,7 @@ import os
 
 datadir = 'target/data/'
 plotdir = 'target/plot/'
+os.makedirs(plotdir, exist_ok=True)
 files = os.listdir(datadir)
 
 disfl = [datadir + x for x in files if 'dis' in x]
