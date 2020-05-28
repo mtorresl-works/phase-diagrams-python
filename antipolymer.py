@@ -5,7 +5,7 @@ from scipy.special import dawsn
 from scipy.optimize import fsolve
 import os
 
-import antip_utils
+import antip_utils as utils
 
 res = []
 os.makedirs("target/data", exist_ok=True)
@@ -55,46 +55,51 @@ for eb in np.arange(5,1,-0.2) :
     """ this iteration resolves S_polymer, S_disc and normalization 
     factor lambda """
     
-    df = 100
+    # df = 100
     
-    while df > 1 :
+    # while df > 1 :
         
-        def equations(p) :
-            """ Normalization conditions:
-            SUM(rho_rl) for every l = rho_r0
-            SUM(S_rl*rho_rl) for every l = S_r average
+    #     def equations(p) :
+    #         """ Normalization conditions:
+    #         SUM(rho_rl) for every l = rho_r0
+    #         SUM(S_rl*rho_rl) for every l = S_r average
             
-             """
-            lambda_, srav = p
-            return (sum([antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp) for ll in np.arange(1,llmax)])-rr0,  
-                sum([antip_utils.csrl(ll, rr0,srav,qq,rd0, sds ,lp)*antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp)
-                for ll in np.arange(1,llmax)])*rr0**-1-srav)
+    #          """
+    #         lambda_, srav = p
+    #         return (sum([antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp) for ll in np.arange(1,llmax)])-rr0,  
+    #             sum([antip_utils.csrl(ll, rr0,srav,qq,rd0, sds ,lp)*antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp)
+    #             for ll in np.arange(1,llmax)])*rr0**-1-srav)
         
-        # solv1
-        solv1 = fsolve(equations, (lambdas, sravs))
-        lambdan = solv1[0].real
-        sravn = solv1[1].real
+    #     # solv1
+    #     solv1 = fsolve(equations, (lambdas, sravs))
+    #     lambdan = solv1[0].real
+    #     sravn = solv1[1].real
 
-        def real_sdeq(x1):
-            # converts a real-valued vector of size 2 to a complex-valued vector of size 1
-            # outputs a real-valued vector of size 2
-            x = x1[0]+1j*x1[1]
-            actual_f = antip_utils.csd(zz,rd0,x,qq,rr0,sravn) - x
-            return [np.real(actual_f),np.imag(actual_f)]
+    #     def real_sdeq(x1):
+    #         # converts a real-valued vector of size 2 to a complex-valued vector of size 1
+    #         # outputs a real-valued vector of size 2
+    #         x = x1[0]+1j*x1[1]
+    #         actual_f = antip_utils.csd(zz,rd0,x,qq,rr0,sravn) - x
+    #         return [np.real(actual_f),np.imag(actual_f)]
         
-        # solv2
-        sdn = fsolve(real_sdeq, [sds, 0])[0]
+    #     # solv2
+    #     sdn = fsolve(real_sdeq, [sds, 0])[0]
         
-        df = 10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)])
+    #     df = 10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)])
         
-        print(df)
+    #     print(df)
         
-        sds = sdn
+    #     sds = sdn
         
-        lambdas = lambdan
+    #     lambdas = lambdan
         
-        sravs = sravn
-    
+    #     sravs = sravn
+    conditions = utils.solve_conditions(eb,xx,cc,zz,qq,lp,llmax,lambdas, sravs, sds)
+    sdn,sds = conditions[0],conditions[0]
+    lambdan,lambdas = conditions[1],conditions[1]
+    sravn,sravs = conditions[2],conditions[2]
+
+    print("Updated starting values: ",lambdas, "  ",sravs, "  ",sds)
     
     print(lp, "  ", sravn, "   ", sdn, " ", lambdan)
     
@@ -102,7 +107,7 @@ for eb in np.arange(5,1,-0.2) :
     """ final polymer length distribution """
     
     def rlf(ll) :
-        return antip_utils.crl(ll,eb,lambdan,rr0,sravn,qq,rd0,sdn,lp).real
+        return utils.crl(ll,eb,lambdan,rr0,sravn,qq,rd0,sdn,lp).real
     
     
     """ write polymer distribution to file """
@@ -132,7 +137,7 @@ for eb in np.arange(5,1,-0.2) :
     
     """ number density averaged nematic order parameter """
     
-    sw = (sum([antip_utils.csrl(ll, rr0,sravn,qq,rd0,sdn,lp)*rlf(ii)/ii for ii in np.arange(1,llmax)])/
+    sw = (sum([utils.csrl(ll, rr0,sravn,qq,rd0,sdn,lp)*rlf(ii)/ii for ii in np.arange(1,llmax)])/
         sum([rlf(ii)/ii for ii in np.arange(1,llmax)])).real
     
     """ append various stuff we want to measure to list "res" """

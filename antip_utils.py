@@ -306,7 +306,7 @@ def wd(ll, rr0,srav,qq,rd0,sd,lp) :
 """EQUATION SYSTEMS SOLVERS"""
 
 @lru_cache(maxsize=32)
-def solve_conditions(eb,x,c,zz,qq,lp,llmax):
+def solve_conditions(eb,x,c,zz,qq,lp,llmax,lambdas, sravs, sds):
     """ this iteration resolves S_polymer, S_disc and normalization 
     factor lambda """
     print("Solving conditions for eb = "+str(eb)+", c = "+str(c)+", x = "+str(x))
@@ -315,16 +315,12 @@ def solve_conditions(eb,x,c,zz,qq,lp,llmax):
     rr0 = c*(1 - x)
     rd0 = c*x
 
-    # starting values for nematic order parameters and normalization constant
-    sravs = 0.8
-    sds = -0.4
-    lambdas = -3
     def equations(p) :
         """ Normalization conditions:
 
         SUM(rho_rl) for every l = rho_r0
-        SUM(S_rl*rho_rl) for every l = S_r average
-        
+        rho_r0^-1 * SUM(S_rl*rho_rl) for every l = S_r average
+        sd = 1/4 (-2 - 2/adn + Sqrt[6]/(Sqrt[adn] DawsonF[Sqrt[3/2] Sqrt[adn]])
         """
         lambda_, srav, sd = p
         return (sum([crl(ll,eb,lambda_,rr0,srav,qq,rd0, sd ,lp) for ll in np.arange(1,llmax)])-rr0,  
@@ -337,5 +333,14 @@ def solve_conditions(eb,x,c,zz,qq,lp,llmax):
     lambdan = solv1[0].real
     sravn = solv1[1].real
     sdn = solv1[2].real
+    while 10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)]) > 1:
+        print("Repeating: error = "+str(10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)])))
+        solv1 = fsolve(equations, (lambdas, sravs, sds))
+        lambdan = solv1[0].real
+        sravn = solv1[1].real
+        sdn = solv1[2].real
+        sds = sdn
+        lambdas = lambdan
+        sravs = sravn
     print("Solved!")
     return [sdn,lambdan,sravn]
