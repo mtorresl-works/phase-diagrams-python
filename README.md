@@ -16,33 +16,37 @@ And to activate it:
 
 ~~~
 (Linux)
-. /venv/bin/activate 
+. /.venv/bin/activate 
 ~~~
 
  or 
 
  ~~~
  (Win)
- ./venv/Scripts/activate 
+ ./.venv/Scripts/activate 
  ~~~
 
 Once you have made and activated a virtual environment, your console should give the name of the virtual environment in parenthesis:
 
 ~~~
-PS C:\tmp\test_imports> python -m venv venv
-PS C:\tmp\test_imports> .\venv\Scripts\activate
+PS C:\tmp\test_imports> python -m venv .venv
+PS C:\tmp\test_imports> .\.venv\Scripts\activate
 (venv) PS C:\tmp\test_imports>
 ~~~
 
-2. pip install the latest version of some necessary packages:
+3. Run the setup script
+
+This command allows to deploy the project’s source for use in one or more “staging areas” where it will be available for importing. This deployment is done in such a way that changes to the project source are immediately available in the staging area(s), without needing to run a build or install step after each change.
+
+Simply, run
 
 ~~~
-pip install numpy, matplotlib, scipy --upgrade
+python setup.py develop
 ~~~
 
-3.  pip install the project in editable state
+4.  pip install the project in editable state
 
-Install the top level package **roddisk** using pip. The trick is to use the -e flag when doing the install. This way it is installed in an editable state, and all the edits made to the .py files will be automatically included in the installed package.
+Finally, install the top level package **roddisk** using pip. The trick is to use the -e flag when doing the install. This way it is installed in an editable state, and all the edits made to the .py files will be automatically included in the installed package.
 
 In the root directory, run
 
@@ -50,13 +54,3 @@ In the root directory, run
 pip install -e . 
 ~~~
 (note the dot, it stands for "current directory").
-
-4. Run the setup script
-
-Finally, run
-
-~~~
-python setup.py 
-~~~
-
-to produce distributions and automatically include all packages in the directory where the setup.py lives.
