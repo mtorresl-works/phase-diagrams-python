@@ -3,6 +3,7 @@ import math, cmath
 from scipy.special import dawsn
 from scipy.optimize import fsolve
 from functools import lru_cache
+import os
 
 """ ALIGNMENT AMPLITUDES """
 

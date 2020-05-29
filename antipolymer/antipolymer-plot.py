@@ -3,12 +3,17 @@ import matplotlib.cm as cm
 import numpy as np
 import os
 
-datadir = 'target/data/'
-plotdir = 'target/plot/'
-os.makedirs(plotdir, exist_ok=True)
-files = os.listdir(datadir)
+import config
 
-disfl = [datadir + x for x in files if 'dis' in x]
+# Plot folder inside target
+dirname=os.path.basename(os.path.dirname(__file__))
+target_dir = config.plot_dir+"/"+dirname+"/"
+os.makedirs(target_dir, exist_ok=True)
+
+data_dir = config.data_dir+"/"+dirname+"/"
+files = os.listdir(data_dir)
+
+disfl = [data_dir + x for x in files if 'dis' in x]
 
 # your dataset
 i=0
@@ -39,7 +44,7 @@ plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 plt.xlabel("l")
 plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
-plt.savefig(plotdir + "dis.png")                   # Save the plot
+plt.savefig(target_dir + "dis.png")                   # Save the plot
 # plt.show()                                         # Display the plot
 
 

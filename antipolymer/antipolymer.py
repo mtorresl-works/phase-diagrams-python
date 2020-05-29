@@ -1,14 +1,15 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import cmath, math
-from scipy.special import dawsn
-from scipy.optimize import fsolve
 import os
 
-import antip_utils as utils
+from utils import roddisk_utils as utils
+import config
+
+# Data folder inside target
+dirname=os.path.basename(os.path.dirname(__file__))
+target_dir = config.data_dir+"/"+dirname+"/"
+os.makedirs(target_dir, exist_ok=True)
 
 res = []
-os.makedirs("target/data", exist_ok=True)
 
 """ overall concentration and disc mole fraction """
 
@@ -55,45 +56,6 @@ for eb in np.arange(5,1,-0.2) :
     """ this iteration resolves S_polymer, S_disc and normalization 
     factor lambda """
     
-    # df = 100
-    
-    # while df > 1 :
-        
-    #     def equations(p) :
-    #         """ Normalization conditions:
-    #         SUM(rho_rl) for every l = rho_r0
-    #         SUM(S_rl*rho_rl) for every l = S_r average
-            
-    #          """
-    #         lambda_, srav = p
-    #         return (sum([antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp) for ll in np.arange(1,llmax)])-rr0,  
-    #             sum([antip_utils.csrl(ll, rr0,srav,qq,rd0, sds ,lp)*antip_utils.crl(ll,eb,lambda_,rr0,srav,qq,rd0, sds ,lp)
-    #             for ll in np.arange(1,llmax)])*rr0**-1-srav)
-        
-    #     # solv1
-    #     solv1 = fsolve(equations, (lambdas, sravs))
-    #     lambdan = solv1[0].real
-    #     sravn = solv1[1].real
-
-    #     def real_sdeq(x1):
-    #         # converts a real-valued vector of size 2 to a complex-valued vector of size 1
-    #         # outputs a real-valued vector of size 2
-    #         x = x1[0]+1j*x1[1]
-    #         actual_f = antip_utils.csd(zz,rd0,x,qq,rr0,sravn) - x
-    #         return [np.real(actual_f),np.imag(actual_f)]
-        
-    #     # solv2
-    #     sdn = fsolve(real_sdeq, [sds, 0])[0]
-        
-    #     df = 10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)])
-        
-    #     print(df)
-        
-    #     sds = sdn
-        
-    #     lambdas = lambdan
-        
-    #     sravs = sravn
     conditions = utils.solve_conditions(eb,xx,cc,zz,qq,lp,llmax,lambdas, sravs, sds)
     sdn,sds = conditions[0],conditions[0]
     lambdan,lambdas = conditions[1],conditions[1]
@@ -114,7 +76,7 @@ for eb in np.arange(5,1,-0.2) :
     resp = []
     for ll in np.arange(1,llmax) :
         resp.append([ll,rlf(ll)])
-        np.savetxt("target/data/eb_"+str(eb)+"_dis.txt",resp)
+        np.savetxt(target_dir+"eb_"+str(eb)+"_dis.txt",resp)
     
     
     """ compute maximum probability for polymer length """
@@ -145,4 +107,4 @@ for eb in np.arange(5,1,-0.2) :
     res.append([eb, m1, var, sravn, sdn, sw, maxprob])
     
     """ write to file """
-    np.savetxt("target/data/res.txt",res)
+    np.savetxt(target_dir+"res.txt",res)
