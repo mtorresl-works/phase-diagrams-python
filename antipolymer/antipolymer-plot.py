@@ -6,11 +6,10 @@ import os
 import config
 
 # Plot folder inside target
-dirname=os.path.basename(os.path.dirname(__file__))
-target_dir = config.plot_dir+"/"+dirname+"/"
+target_dir = config.plot_dir(__file__)
 os.makedirs(target_dir, exist_ok=True)
 
-data_dir = config.data_dir+"/"+dirname+"/"
+data_dir = config.data_dir(__file__)
 files = os.listdir(data_dir)
 
 disfl = [data_dir + x for x in files if 'dis' in x]

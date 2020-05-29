@@ -5,8 +5,7 @@ from utils import roddisk_utils as utils
 import config
 
 # Data folder inside target
-dirname=os.path.basename(os.path.dirname(__file__))
-target_dir = config.data_dir+"/"+dirname+"/"
+target_dir = config.data_dir(__file__)
 os.makedirs(target_dir, exist_ok=True)
 
 res = []
@@ -60,10 +59,8 @@ for eb in np.arange(5,1,-0.2) :
     sdn,sds = conditions[0],conditions[0]
     lambdan,lambdas = conditions[1],conditions[1]
     sravn,sravs = conditions[2],conditions[2]
-
-    print("Updated starting values: ",lambdas, "  ",sravs, "  ",sds)
     
-    print(lp, "  ", sravn, "   ", sdn, " ", lambdan)
+    print(eb, "  ", sravn, "   ", sdn, " ", lambdan)
     
     
     """ final polymer length distribution """
