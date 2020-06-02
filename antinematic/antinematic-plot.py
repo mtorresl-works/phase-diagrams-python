@@ -19,7 +19,7 @@ i=0
 eb = []
 dis = []
 for disf in disfl :
-    eb.append(float(disf.split("_")[1])) 
+    eb.append(float(disf.split("_")[3])) 
     data = np.loadtxt( disf ).transpose()
     dis.append(data[1])
     i=i+1
@@ -41,10 +41,10 @@ scalarmappaple.set_array(eb)
 plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 
 plt.xlabel("l")
-plt.yscale("log")
+# plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
-plt.savefig(target_dir + "dis.png")                   # Save the plot
-# plt.show()                                         # Display the plot
+# plt.savefig(target_dir + "dis.png")                   # Save the plot
+plt.show()                                         # Display the plot
 
 
 

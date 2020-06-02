@@ -73,7 +73,7 @@ for eb in np.arange(5,1,-0.2) :
     resp = []
     for ll in np.arange(1,llmax) :
         resp.append([ll,rlf(ll)])
-        np.savetxt(target_dir+"eb_"+str(eb)+"_dis.txt",resp)
+        np.savetxt(target_dir+"dis_at_eb_"+str(round(eb,1))+"_.txt",resp)
     
     
     """ compute maximum probability for polymer length """
