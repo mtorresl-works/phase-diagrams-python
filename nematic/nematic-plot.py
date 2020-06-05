@@ -43,8 +43,8 @@ plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 plt.xlabel("l")
 plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
-plt.savefig(target_dir + "dis.png")                   # Save the plot
-# plt.show()                                         # Display the plot
+# plt.savefig(target_dir + "dis.png")                   # Save the plot
+plt.show()                                         # Display the plot
 
 
 

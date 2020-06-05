@@ -71,7 +71,7 @@ def xi(rr0,srav,qq,rd0,sd,lp) :
     '''
     ar_ = ar(rr0,srav,qq,rd0,sd)
     
-    return 1 + abs( ar_ ) + lp - math.sqrt(1 + 2*lp + 2*abs( ar_ )*lp + lp**2)
+    return 1 + abs( ar_ ) + lp - cmath.sqrt(1 + 2*lp + 2*abs( ar_ )*lp + lp**2)
 
 def arbar(rr0,srav,qq,rd0,sd,lp) :
     '''(alpha_r + xi) The effective uniaxial alignment amplitude for rods
@@ -94,10 +94,29 @@ def arbar(rr0,srav,qq,rd0,sd,lp) :
     ar_ = ar(rr0,srav,qq,rd0,sd)
     xi_ = xi(rr0,srav,qq,rd0,sd,lp)
     
-    return ar_ - np.sign( ar_ ) * xi_
+    return ar_ - np.sign( ar_.real ) * xi_
 
 
 """ POLYMER LENGTH DISTRIBUTION """
+
+def s(y):
+    '''(s) The s function in monomers distribution.
+    
+    Args:
+        y (complex): Generally, the uniaxial order parameter.
+    
+    Raises:
+        ¿RuntimeError: Description? TODO: check this
+    
+    Returns:
+        complex: The return value.
+        
+    '''
+    try:
+        return cmath.exp(y)*dawsn(
+            cmath.sqrt((3*y)/2))/cmath.sqrt((3*y)/2)
+    except OverflowError:
+        return complex(float('inf'),0)
 
 def crl(ll,eb,lambda_,rr0,srav,qq,rd0,sd,lp):
     '''(rho_rl) The polymer length distribution in nematic phase
@@ -123,8 +142,7 @@ def crl(ll,eb,lambda_,rr0,srav,qq,rd0,sd,lp):
     '''
     arbar_ = arbar(rr0,srav,qq,rd0,sd,lp)
     try:
-        return ll*math.exp(eb + lambda_*ll)*math.exp(arbar_*ll)*dawsn(
-            cmath.sqrt((3*arbar_*ll)/2))/cmath.sqrt((3*arbar_*ll)/2)
+        return ll*cmath.exp(eb + lambda_*ll)*s(arbar_*ll)
     except OverflowError:
         return complex(float('inf'),0)
 
@@ -176,7 +194,7 @@ def csrl(ll, rr0,srav,qq,rd0,sd,lp):
     '''
     arbar_ = arbar(rr0,srav,qq,rd0,sd,lp)
     
-    return 1/4*(-2 - 2/(arbar_*ll) + cmath.sqrt(6)/(cmath.sqrt(arbar_*ll)
+    return 1/4*(-2 - 2/(arbar_*ll) + math.sqrt(6)/(cmath.sqrt(arbar_*ll)
         *dawsn(cmath.sqrt(3/2)*cmath.sqrt(arbar_*ll))))
 
 def csd(zz,rd0,sd,qq,rr0,srav) :
@@ -199,7 +217,7 @@ def csd(zz,rd0,sd,qq,rr0,srav) :
         
     '''
     ad_ = ad(zz,rd0,sd,qq,rr0,srav)
-    return 1/4*(-2 - 2/ad_ + cmath.sqrt(6)/(cmath.sqrt(ad_)
+    return 1/4*(-2 - 2/ad_ + math.sqrt(6)/(cmath.sqrt(ad_)
         *dawsn(cmath.sqrt(3/2)*cmath.sqrt(ad_))))
 
 
@@ -227,9 +245,8 @@ def sigmar(ll, rr0,srav,qq,rd0,sd,lp) :
     '''
     arbar_ = arbar(rr0,srav,qq,rd0,sd,lp)
 
-    return - math.log(math.exp(arbar_*ll)*dawsn(
-            cmath.sqrt((3*arbar_*ll)/2))/cmath.sqrt((3*arbar_*ll)/2)
-            )+ arbar_*ll*csrl(ll, rr0,srav,qq,rd0,sd,lp)
+    return (- cmath.log(s(arbar_*ll))
+            + arbar_*ll*csrl(ll, rr0,srav,qq,rd0,sd,lp))
             
 def sigmad(zz,rd0,sd,qq,rr0,srav) :
     '''( sigma(ad) ) orientational entropy for disks. 
@@ -252,9 +269,7 @@ def sigmad(zz,rd0,sd,qq,rr0,srav) :
     '''
     ad_ = ad(zz,rd0,sd,qq,rr0,srav)
 
-    return - math.log(math.exp(ad_)*dawsn(
-            cmath.sqrt((3*ad_)/2))/cmath.sqrt((3*ad_)/2)
-            )+ ad_*csd(zz,rd0,sd,qq,rr0,srav)
+    return - cmath.log(s(ad_)) + ad_*csd(zz,rd0,sd,qq,rr0,srav)
 
 def wr(ll, rr0,srav,qq,rd0,sd,lp) :
     '''( W_Ur(arbar*l) ) W functional for the nematic state.
@@ -302,7 +317,7 @@ def wd(ll, rr0,srav,qq,rd0,sd,lp) :
     '''
     arbar_ = arbar(rr0,srav,qq,rd0,sd,lp)
 
-    return (3/4) * (arbar_*ll)**2 + (3/2*(arbar_*ll)**2-3*arbar_*ll)*csrl(ll, rr0,srav,qq,rd0,sd,lp)
+    return 3/4*(arbar_*ll)**2 + ( 3/2*(arbar_*ll)**2 - 3*arbar_*ll )*csrl(ll, rr0,srav,qq,rd0,sd,lp)
 
 """EQUATION SYSTEMS SOLVERS"""
 
@@ -310,38 +325,56 @@ def wd(ll, rr0,srav,qq,rd0,sd,lp) :
 def solve_conditions(eb,x,c,zz,qq,lp,llmax,lambdas, sravs, sds):
     """ this iteration resolves S_polymer, S_disc and normalization 
     factor lambda """
-    print("Solving conditions for eb = "+str(eb)+", c = "+str(c)+", x = "+str(x))
+    print("Solving conditions ...")
+    # print("Solving conditions for eb = "+str(eb)+", c = "+str(c)+", x = "+str(x))
 
     # convert to overall monomer and disc concentrations
     rr0 = c*(1 - x)
     rd0 = c*x
 
-    def equations(p) :
+    def equations(lambda_, srav, sd) :
         """ Normalization conditions:
 
         SUM(rho_rl) for every l = rho_r0
         rho_r0^-1 * SUM(S_rl*rho_rl) for every l = S_r average
         sd = 1/4 (-2 - 2/adn + Sqrt[6]/(Sqrt[adn] DawsonF[Sqrt[3/2] Sqrt[adn]])
         """
-        lambda_, srav, sd = p
         return (sum([crl(ll,eb,lambda_,rr0,srav,qq,rd0, sd ,lp) for ll in np.arange(1,llmax)])-rr0,  
             sum([csrl(ll, rr0,srav,qq,rd0, sd ,lp)*crl(ll,eb,lambda_,rr0,srav,qq,rd0, sd ,lp)
             for ll in np.arange(1,llmax)])*rr0**-1-srav,
             csd(zz,rd0,sd,qq,rr0,srav) - sd)
+
+    # use initial values as 2D vectors (fsolve cannot use complex values)
+    lambdas = np.array([lambdas,0])
+    sravs = np.array([sravs,0])
+    sds = np.array([sds,0])
+    
+    def real_equations(p):
+        # converts three real-valued vectors of size 2 to complex-valued vectors of size 2
+        # outputs three real-valued vectors of size 2
+        lambda_, ilambda_, srav, israv, sd, isd = p
+        zlambda = lambda_+1j*ilambda_
+        zsrav = srav+1j*israv
+        zsd = sd+1j*isd
+        actual_f1, actual_f2, actual_f3 = equations(zlambda, zsrav, zsd)
+        return (np.real(actual_f1),np.imag(actual_f1),
+                np.real(actual_f2),np.imag(actual_f2),
+                np.real(actual_f3),np.imag(actual_f3))
+
     
     # solv1
-    solv1 = fsolve(equations, (lambdas, sravs, sds))
-    lambdan = solv1[0].real
-    sravn = solv1[1].real
-    sdn = solv1[2].real
-    while 10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)]) > 1:
-        print("Repeating: error = "+str(10**5*max([abs(sdn - sds), abs(sravn - sravs), abs(lambdan - lambdas)])))
-        solv1 = fsolve(equations, (lambdas, sravs, sds))
-        lambdan = solv1[0].real
-        sravn = solv1[1].real
-        sdn = solv1[2].real
+    solv1 = fsolve(real_equations, (lambdas, sravs, sds))
+    lambdan = np.array([solv1[0],solv1[1]])
+    sravn = np.array([solv1[2],solv1[3]])
+    sdn = np.array([solv1[4],solv1[5]])
+    while 10**5*max([np.linalg.norm(sdn - sds), np.linalg.norm(sravn - sravs), np.linalg.norm(lambdan - lambdas)]) > 1:
+        print("Repeating: difference = "+str(10**5*max([np.linalg.norm(sdn - sds), np.linalg.norm(sravn - sravs), np.linalg.norm(lambdan - lambdas)])))
         sds = sdn
         lambdas = lambdan
         sravs = sravn
+        solv1 = fsolve(real_equations, (lambdas, sravs, sds))
+        lambdan = np.array([solv1[0],solv1[1]])
+        sravn = np.array([solv1[2],solv1[3]])
+        sdn = np.array([solv1[4],solv1[5]])
     print("Solved!")
-    return [sdn,lambdan,sravn]
+    return [sdn[0],lambdan[0],sravn[0]]

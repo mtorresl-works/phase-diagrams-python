@@ -17,7 +17,8 @@ disfl = [data_dir + x for x in files if 'dis' in x]
 # your dataset
 i=0
 eb = []
-dis = []
+lp = []
+dis = {}
 for disf in disfl :
     eb.append(float(disf.split("_")[3])) 
     data = np.loadtxt( disf ).transpose()
@@ -32,7 +33,10 @@ colormap = cm.jet
 # plot
 i=0
 for n in eb:
-    plt.plot(dis[i], color=colormap(normalize(n)))
+    if lp==3:
+        plt.plot(dis[i], color=colormap(normalize(n)))
+    elif lp==10:
+        plt.plot(dis[i], color=colormap(normalize(n)))
     i=i+1
 
 # setup the colorbar
