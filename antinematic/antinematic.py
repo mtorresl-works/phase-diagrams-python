@@ -44,7 +44,7 @@ llmax = 120
 
 """ persistence length """
 
-lp = 3
+lp = 5
 
 
 """ loop over temperature """

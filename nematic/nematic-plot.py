@@ -17,11 +17,17 @@ disfl = [data_dir + x for x in files if 'dis' in x]
 # your dataset
 i=0
 eb = []
+lp = []
 dis = []
 for disf in disfl :
     eb.append(float(disf.split("_")[3])) 
     data = np.loadtxt( disf ).transpose()
-    dis.append(data[1])
+    thisdis = {
+        "lp": float(disf.split("_")[5]),
+        "eb": float(disf.split("_")[3]),
+        "data": data[1]
+    }
+    dis.append(thisdis)
     i=i+1
 l = data[0]
 
@@ -30,10 +36,11 @@ normalize = plt.Normalize(min(eb), max(eb))
 colormap = cm.jet
 
 # plot
-i=0
-for n in eb:
-    plt.plot(dis[i], color=colormap(normalize(n)))
-    i=i+1
+for item in dis:
+    if item["lp"]==3:
+        plt.plot(item["data"], linestyle="--", color=colormap(normalize(item["eb"])), label="lp = 3")
+    elif item["lp"]==10:
+        plt.plot(item["data"], linestyle="-", color=colormap(normalize(item["eb"])), label="lp = 10")
 
 # setup the colorbar
 scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
@@ -41,8 +48,22 @@ scalarmappaple.set_array(eb)
 plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 
 plt.xlabel("l")
-plt.yscale("log")
+# plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
+
+
+
+handles, labels = plt.gca().get_legend_handles_labels()
+newLabels, newHandles = [], []
+for handle, label in zip(handles, labels):
+  if label not in newLabels:
+    newLabels.append(label)
+    newHandles.append(handle)
+plt.legend(newHandles, newLabels)
+
+
+
+
 # plt.savefig(target_dir + "dis.png")                   # Save the plot
 plt.show()                                         # Display the plot
 

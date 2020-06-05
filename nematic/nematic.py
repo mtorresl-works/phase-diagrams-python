@@ -40,17 +40,17 @@ large enough to make sure the polymer distribution remains close to
 zero at llmax, if not llmax should be increased which slows down the 
 computation """
 
-llmax = 50
+llmax = 80
 
 """ persistence length """
 
-lp = 5
+lp = 10
 
 
 """ loop over temperature """
 
 
-for eb in np.arange(5,1,-0.2) :
+for eb in np.arange(1.5,0.5,-0.4) :
     
     """ this iteration resolves S_polymer, S_disc and normalization 
     factor lambda """
@@ -60,7 +60,7 @@ for eb in np.arange(5,1,-0.2) :
     lambdan,lambdas = conditions[1],conditions[1]
     sravn,sravs = conditions[2],conditions[2]
     
-    print(eb, "  ", sravn, "   ", sdn, " ", lambdan)
+    print("eb = ", eb, "\nlp = ", lp, "\nxx = ", xx, "\nRESULTS\nsravn = ", sravn, "\nsdn = ", sdn, "\nlambdan = ", lambdan, "\n")
     
     
     """ final polymer length distribution """
@@ -73,7 +73,7 @@ for eb in np.arange(5,1,-0.2) :
     resp = []
     for ll in np.arange(1,llmax) :
         resp.append([ll,rlf(ll)])
-        np.savetxt(target_dir+"dis_at_eb_"+str(round(eb,1))+"_.txt",resp)
+        np.savetxt(target_dir+"dis_at_eb_"+str(round(eb,1))+"_lp_"+str(lp)+"_.txt",resp)
     
     
     """ compute maximum probability for polymer length """
@@ -82,7 +82,7 @@ for eb in np.arange(5,1,-0.2) :
     
     maxprob=max(listrlf)
     
-    print(maxprob)
+    print("Check: maxprob = ",maxprob, "\n\n")
     
     """ polymer length dispersion """
     
