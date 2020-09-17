@@ -16,7 +16,7 @@ And to activate it:
 
 ~~~
 (Linux)
-. /.venv/bin/activate 
+source ./.venv/bin/activate 
 ~~~
 
  or 
