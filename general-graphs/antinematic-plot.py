@@ -13,6 +13,8 @@ data_dir = config.data_dir(__file__)
 files = os.listdir(data_dir)
 
 disfl = [data_dir + x for x in files if 'dat' in x]
+print(disfl)
+disfl.reverse()
 
 # your dataset
 i=0
@@ -43,21 +45,21 @@ colormap = cm.jet
 for item in dis:
     if item["x"]==0.05:
         plt.figure(1)
-        plt.plot(item["data"], color=colormap(normalize(item["eb"])), label="x = 0.05")  # linestyle="--",
+        plt.plot(item["data"], linewidth=3.0, color=colormap(normalize(item["eb"])), label="x = 0.05")  # linestyle="--",
     elif item["x"]==0.95:
         plt.figure(2)
-        plt.plot(item["data"], color=colormap(normalize(item["eb"])), label="x = 0.95")  # linestyle="-",
+        plt.plot(item["data"], linewidth=3.0, color=colormap(normalize(item["eb"])), label="x = 0.95")  # linestyle="-",
 
-plt.figure(2)
+plt.figure(1)
 # setup the colorbar
 scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
 scalarmappaple.set_array(eb)
 plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 
 plt.xlabel("l")
-plt.yscale("log")
+# plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
-plt.axis([0, 80, 1e-5, 0.1])
+plt.axis([-1, 80, 1e-10, 2])
 
 
 
@@ -69,16 +71,16 @@ for handle, label in zip(handles, labels):
     newHandles.append(handle)
 plt.legend(newHandles, newLabels)
 
-plt.figure(1)
+plt.figure(2)
 # setup the colorbar
 scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
 scalarmappaple.set_array(eb)
 plt.colorbar(scalarmappaple, label='\u03B5$_b$')
 
 plt.xlabel("l")
-plt.yscale("log")
+# plt.yscale("log")
 plt.ylabel("\u03C1$_r$(l)")
-plt.axis([0, 80, 1e-5, 0.1])
+plt.axis([-1, 15, 1e-3, 0.2])
 
 
 handles, labels = plt.gca().get_legend_handles_labels()
