@@ -4,6 +4,7 @@ import numpy as np
 import os
 
 import config
+plt.rcParams.update({'font.size': 15})
 
 # Plot folder inside target
 target_dir = config.plot_dir(__file__)
