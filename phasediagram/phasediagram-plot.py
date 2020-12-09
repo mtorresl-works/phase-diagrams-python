@@ -5,7 +5,10 @@ import numpy as np
 import os
 
 import config
+from utils import roddisk_utils as utils
+
 plt.rcParams.update({'font.size': 15})
+
 
 # Plot folder inside target
 target_dir = config.plot_dir(__file__)
@@ -48,19 +51,19 @@ for disf in disfl:
 
 # general-graphs
 for set in dis:
-    fig, ax = plt.subplots(1, figsize=(6, 6), dpi=200) # , figsize=(10, 10)
+    fig, ax = plt.subplots(1, figsize=(6, 6), dpi=200)  # , figsize=(10, 10)
     xi = [item["xi"] for item in set["data"][:]]
     xn = [item["xn"] for item in set["data"][:]]
     pi = [item["pi"] for item in set["data"][:]]
     ax.plot(xi, pi, "b.", markersize=1,
-             label="I - (I + N)")  # linestyle="--", color=colormap(normalize(item["eb"]))
+            label="I - (I + N)")  # linestyle="--", color=colormap(normalize(item["eb"]))
     ax.plot(xn, pi, "b.", markersize=1, label="(I + N) - N")
     plt.xlabel("x")
     # plt.xscale("logit")
-    plt.ylabel("P$_I$(x)")
-    ax.axis([0, 1, 3, 6])
-    plt.title("q =" + str(set["q"]) + ", z = " + str(set["z"]) + ", l$_p$ = " +
-              str(set["lp"]) + ", $\epsilon$$_b$ = " + str(set["eb"]))
+    plt.ylabel("P(x)")
+    ax.axis([0, 1, 3, 7])
+    plt.title("q =" + str(utils.specialRound(set["q"])) + ", z = " + str(utils.specialRound(set["z"])) + ", l$_p$ = " +
+              str(int(set["lp"])) + ", $\epsilon$$_b$ = " + str(utils.specialRound(set["eb"])))
     # plt.legend()
     i = i + 1
     x = set["data"][5]["xi"]
@@ -82,11 +85,21 @@ plt.title("q =" + str(q) + ", z = " + str(z) + ", l$_p$ = " +
           str(lp) + ", x$_i$ = " + str(x))
 plt.legend()
 """
-ax.hlines(4.760032582099456, 0, 1, colors='k', linestyles='dotted')
+# for eb = -1
+# P = 5.305
+
+# for eb = -1.403
+P = 4.7014531873310546
+
+# for eb = -3
+# P = 3.733
+
+ax.hlines(P, 0, 1, colors='k', linestyles='dotted')
 trans = transforms.blended_transform_factory(
     ax.get_yticklabels()[0].get_transform(), ax.transData)
-ax.text(0,4.760032582099456, "{:.3f}".format(4.760032582099456), color="black", transform=trans,
+ax.text(0, P, utils.specialRound(P), color="black", transform=trans,
         ha="right", va="center")
+
 # plt.savefig(target_dir + "dis.png")                   # Save the general-graphs
 plt.show()  # Display the general-graphs
 
