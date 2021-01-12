@@ -6,7 +6,6 @@ import os
 
 import config
 from utils import roddisk_utils as utils
-
 plt.rcParams.update({'font.size': 15})
 
 
@@ -61,7 +60,7 @@ for set in dis:
     plt.xlabel("x")
     # plt.xscale("logit")
     plt.ylabel("P(x)")
-    ax.axis([0, 1, 3, 7])
+    ax.axis([0, 1, 0, 2])
     plt.title("q =" + str(utils.specialRound(set["q"])) + ", z = " + str(utils.specialRound(set["z"])) + ", l$_p$ = " +
               str(int(set["lp"])) + ", $\epsilon$$_b$ = " + str(utils.specialRound(set["eb"])))
     # plt.legend()
@@ -85,11 +84,14 @@ plt.title("q =" + str(q) + ", z = " + str(z) + ", l$_p$ = " +
           str(lp) + ", x$_i$ = " + str(x))
 plt.legend()
 """
+# for eb = 1
+P = 12.463
+
 # for eb = -1
 # P = 5.305
 
 # for eb = -1.403
-P = 4.7014531873310546
+# P = 4.7014531873310546
 
 # for eb = -3
 # P = 3.733
@@ -97,8 +99,8 @@ P = 4.7014531873310546
 ax.hlines(P, 0, 1, colors='k', linestyles='dotted')
 trans = transforms.blended_transform_factory(
     ax.get_yticklabels()[0].get_transform(), ax.transData)
-ax.text(0, P, utils.specialRound(P), color="black", transform=trans,
-        ha="right", va="center")
+# ax.text(0, P, utils.specialRound(P), color="black", transform=trans,
+#         ha="right", va="center")
 
 # plt.savefig(target_dir + "dis.png")                   # Save the general-graphs
 plt.show()  # Display the general-graphs
