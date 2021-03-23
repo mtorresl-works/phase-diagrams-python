@@ -67,9 +67,10 @@ for set in dis:
     ax.plot(rrn, rdn, "b.", markersize=1)
 
     plt.xlabel("$\\rho$$_r$$_0$")
-    # plt.xscale("logit")
+    # plt.xscale("log")
+    # plt.yscale("log")
     plt.ylabel("$\\rho$$_d$$_0$")
-    ax.axis([0, 5, 0, 7])
+    ax.axis([-1, 4, -1, 6])
     plt.title("q =" + str(utils.specialRound(set["q"])) + ", z = " + str(utils.specialRound(set["z"])) + ", l$_p$ = " +
               str(int(set["lp"])) + ", $\epsilon$$_b$ = " + str(utils.specialRound(set["eb"])))
     # plt.legend()
