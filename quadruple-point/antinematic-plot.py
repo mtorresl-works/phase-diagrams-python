@@ -59,7 +59,7 @@ for item in dis:
 plt.xlabel('\u03B5$_b$')
 # plt.yscale("log")
 plt.ylabel("$z$")
-plt.axis([-3, 3, 0, 13])
+plt.axis([-2.5, 2.9, 0, 12])
 
 # plt.legend()
 
