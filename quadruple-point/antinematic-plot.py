@@ -18,17 +18,17 @@ disfl = [data_dir + x for x in files if 'dat' in x]
 # your dataset
 colordata = []
 dis = []
-qq = []
+zz = []
 
 for disf in disfl :
-    print(disf)
+    # print(disf)
     data = np.loadtxt(disf).transpose()
-    qq.append(float(disf.split("_")[1]))
+    zz.append(float(disf.split("_")[1]))
     colordata.append(float(disf.split("_")[1]))
     thisdis = {
-        "qq":  float(disf.split("_")[1]),
+        "qq":  data[0],
         "lp":  float(disf.split("_")[2]),
-        "zz":  data[1],
+        "zz":  float(disf.split("_")[1]),
         "ci1":  data[2],
         "xxi1": data[3],
         "ci2":  data[4],
@@ -47,26 +47,27 @@ for disf in disfl :
 
 
 # setup the normalization and the colormap
-normalize = plt.Normalize(min(qq), max(qq))
+normalize = plt.Normalize(min(zz), max(zz))
 colormap = cm.coolwarm
 
 # general-graphs
 fig, ax = plt.subplots(1, figsize=(6,5), dpi=200)
 for item in dis:
     if True: # item["type"]==ANTINEMATIC:
-        ax.plot(item["eb"], item["zz"], linewidth=2.0, linestyle="-", color=colormap(normalize(item["qq"])), label="$q = $"+str(item["qq"]))  # linestyle="-",
+        ax.plot(item["eb"], item["qq"], linewidth=0.5, linestyle="-", color=colormap(normalize(item["zz"])), label="$z = $"+str(item["zz"]))  # linestyle="-",
+        print(item["eb"][0])
 
 plt.xlabel('\u03B5$_b$')
 # plt.yscale("log")
-plt.ylabel("$z$")
-plt.axis([-2.5, 2.9, 0, 12])
+plt.ylabel("$q$")
+plt.axis([-2.5, 2.9, 2.5, 3.8])
 
 # plt.legend()
 
 # setup the colorbar
 scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
-scalarmappaple.set_array(qq)
-fig.colorbar(scalarmappaple, label='$q$', ax=ax)
+scalarmappaple.set_array(zz)
+fig.colorbar(scalarmappaple, label='$z$', ax=ax)
 
 
 # plt.savefig(target_dir + "dis.png")                   # Save the general-graphs
