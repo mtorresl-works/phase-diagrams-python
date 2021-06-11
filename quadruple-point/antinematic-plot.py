@@ -21,7 +21,10 @@ dis = []
 zz = []
 
 for disf in disfl :
+<<<<<<< HEAD
     # print(disf)
+=======
+>>>>>>> 10dc459
     data = np.loadtxt(disf).transpose()
     zz.append(float(disf.split("_")[1]))
     colordata.append(float(disf.split("_")[1]))
@@ -51,6 +54,7 @@ normalize = plt.Normalize(min(zz), max(zz))
 colormap = cm.coolwarm
 
 # general-graphs
+<<<<<<< HEAD
 fig, ax = plt.subplots(1, figsize=(6,5), dpi=200)
 for item in dis:
     if True: # item["type"]==ANTINEMATIC:
@@ -68,6 +72,48 @@ plt.axis([-2.5, 2.9, 2.5, 3.8])
 scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
 scalarmappaple.set_array(zz)
 fig.colorbar(scalarmappaple, label='$z$', ax=ax)
+=======
+eb=[]
+qq = sorted(qq)
+Q, Z = np.meshgrid(qq, dis[0]["zz"])
+newdis = sorted(dis, key=lambda k: k['qq'])
+# fig, ax = plt.subplots(1, figsize=(6,5), dpi=200, projection='3d')
+for item in newdis:
+    for i in range(len(item["zz"])):
+        eb.append(item["eb"][i])
+fig = plt.figure(1, figsize=(6,5), dpi=200)
+ax = plt.axes(projection='3d')
+
+Q = np.reshape(Q, (300, 300))
+Z = np.reshape(Z, (300, 300))
+eb = np.reshape(eb, (300, 300))
+ax.plot_surface(Q, Z, eb, rstride=1, cstride=1,
+                cmap=colormap, edgecolor='none')
+
+ax.set_xlabel("$q$")
+ax.set_ylabel("$z$")
+ax.set_zlabel('\u03B5$_b$')
+
+ax.set_xlim(Q.min(), Q.max())
+ax.set_ylim(0, 12)
+ax.set_zlim(-2.5, 2.9)
+
+#
+# for item in dis:
+#     ax.plot(item["eb"], item["zz"], linewidth=2.0, linestyle="-", color=colormap(normalize(item["qq"])), label="$q = $"+str(item["qq"]))  # linestyle="-",
+#
+# plt.xlabel('\u03B5$_b$')
+# # plt.yscale("log")
+# plt.ylabel("$z$")
+# plt.axis([-2.5, 2.9, 0, 12])
+#
+# # plt.legend()
+#
+# # setup the colorbar
+# scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
+# scalarmappaple.set_array(qq)
+# fig.colorbar(scalarmappaple, label='$q$', ax=ax)
+>>>>>>> 10dc459
 
 
 # plt.savefig(target_dir + "dis.png")                   # Save the general-graphs
